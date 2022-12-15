@@ -1,0 +1,66 @@
+import java.util.*
+import kotlin.io.*
+
+fun getSize(d: String, sizeMap: MutableMap<String, Int>, children: MutableMap<String, MutableList<String>>) : Int {
+  var res = 0
+  if (d in children) {
+    for (c in children[d]!!) {
+      res = res + getSize(c, sizeMap, children)
+    }
+  }
+  sizeMap[d] = sizeMap.getOrDefault(d, 0) + res
+  return sizeMap[d]!!
+}
+
+fun main() {
+    val input = generateSequence(::readLine).toList()
+  val sizeMap = mutableMapOf<String, Int>()
+  var curDir = Stack<String>()
+  curDir.push("/")
+  val children = mutableMapOf<String, MutableList<String>>()
+    for (line in input) {
+      val elements = line.split(' ')
+      if (elements[0] == "dir") {
+        if (!(curDir.peek() in children)) {
+          children[curDir.peek()] = mutableListOf(curDir.peek() + "/" + elements[1])
+        } else {
+          children[curDir.peek()]!!.add(curDir.peek() + "/" + elements[1])
+        }
+        continue
+      } else if (elements[0] == "$") {
+        if (elements[1] == "ls") {
+          continue
+        }
+        if (elements[1] == "cd") {
+          if (elements[2] == "..") {
+            curDir.pop()
+            continue
+          } else {
+            if (elements[2] != "/") {
+              curDir.push(curDir.peek() + "/" + elements[2])
+            } else {
+              curDir = Stack<String>()
+              curDir.push("/")
+            }
+          }
+        }
+      } else {
+        sizeMap[curDir.peek()] = sizeMap.getOrDefault(curDir.peek(), 0) + elements[0].toInt()
+      }
+        
+    }
+    getSize("/", sizeMap, children)
+    var s = 0
+    var needed = sizeMap["/"]!! - 40000000
+    var smallest = sizeMap["/"]!!
+    for (v in sizeMap.values) {
+      if (v <= 100000) {
+        s +=  v
+      }
+      if (v >= needed && v < smallest) {
+        smallest = v
+      }
+    }
+    println(s)
+    println(smallest)
+}

@@ -1,0 +1,20 @@
+procedure main()
+  cnt2 := 0
+    cnt1 := 0
+    while line := read() do {
+      line ? {
+        f1 := tab(find("-")) + 0
+        move(1)
+        t1 := tab(find(",")) + 0
+        move(1)
+        f2 := tab(find("-")) + 0
+        move(1)
+        t2 := tab(0) + 0
+      }
+      if f1 <= f2 <= t2 <= t1 then cnt1 := cnt1 + 1
+      else if (f2 <= f1 <= t1 <= t2) then cnt1 := cnt1 + 1
+      if (t2 >= f1 & t1 >= f2) then cnt2 := cnt2 + 1
+    }
+    write(cnt1)
+    write(cnt2)
+end

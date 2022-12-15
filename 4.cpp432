@@ -1,0 +1,21 @@
+#include <iostream>
+using namespace std;
+
+bool contains(int f1, int t1, int f2, int t2) {
+	return f1 <= f2 && t1 >= t2;
+}
+bool overlaps(int f1, int t1, int f2, int t2) {
+	return !(t1 < f2 || t2 < f1);
+}
+int main() {
+	int cnt = 0;
+	int f1, t1, f2, t2;
+	while (scanf("%d-%d,%d-%d", &f1, &t1, &f2, &t2) != EOF) {
+		// if (contains(f1, t1, f2, t2) || contains(f2, t2, f1, t1)) {
+		if (overlaps(f1, t1, f2, t2)) {
+			cnt++;
+		}
+	}
+	cout << cnt << endl;
+	return 0;
+}

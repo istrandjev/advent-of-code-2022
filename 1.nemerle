@@ -1,0 +1,55 @@
+using System;
+using System.Console;
+
+
+public class Test
+{
+	public static Main() : void
+	{
+		mutable line = ReadLine();
+		mutable most1 = 0, most2 = 0, most3 = 0;
+		mutable sum = 0;
+    	while (line != null) {      
+    		if (line.Equals("")) {
+    		   
+    		   if (sum > most1) {
+    		       most3 = most2;
+    		       most2 = most1;
+    		       most1 = sum;
+    		   } else {
+    		       if (sum > most2) {
+    		           most3 = most2;
+    		           most2 = sum
+    		       } else {
+    		           when (sum > most3) {
+    		               most3 = sum;
+    		           }
+    		       }
+    		   }
+
+    		   sum = 0;
+    		} else {
+    		  sum += Int32.Parse(line);
+    		}
+    		line = ReadLine()
+    	};   
+       if (sum > most1) {
+	       most3 = most2;
+	       most2 = most1;
+	       most1 = sum;
+	   } else {
+	       if (sum > most2) {
+	           most3 = most2;
+	           most2 = sum
+	       } else {
+	           when (sum > most3) {
+	               most3 = sum;
+	           }
+	       }
+	   }
+        WriteLine(most1);
+        WriteLine(most2);
+        WriteLine(most3);
+        WriteLine(most1 + most2 + most3);
+	}
+}

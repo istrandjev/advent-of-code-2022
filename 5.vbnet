@@ -1,0 +1,62 @@
+Imports System
+
+Public Class Test
+	Public Shared Sub Main()
+		Dim c As String
+		Dim columns = 9
+		Dim maxHeight = 8
+		Dim a(columns, 64) As String
+		Dim sizes(columns) As Integer
+		Dim i as Integer
+		Dim col as Integer
+		For i = 0 To columns - 1
+			sizes(i) = 0
+		Next
+		For i = 0 To maxHeight - 1
+          Dim temp = Console.ReadLine()
+          For col = 0 To columns - 1
+        	If (temp(col * 4 + 1) <> " ") Then
+	          a(col, sizes(col)) = temp(col * 4 + 1)
+	          sizes(col) += 1
+            End If
+          Next
+    	Next
+    	For col = 0 To columns - 1
+    		For i = 0 To sizes(col)
+    			Dim inverse = sizes(col) - i - 1
+    			If (inverse <= i) Then
+    				Exit For
+    			End If
+	    		Dim x = a(col, i)
+	    		a(col, i) = a(col, inverse)
+	    		a(col, inverse) = x
+    		Next
+    	Next
+		Console.ReadLine()
+		Console.ReadLine()
+		Dim command As String
+		command = "test"
+		Do
+        	command = Console.ReadLine()
+        	If command Is Nothing Then
+        		Exit Do
+        	End If
+        	Dim boza = Split(command, "move")(1)
+			Dim temp = Split(boza, "from")
+			Dim number = Convert.toInt32(temp(0))
+			Dim x = Split(temp(1), "to")
+			Dim fromIndex = Convert.toInt32(x(0)) - 1
+			Dim toIndex = Convert.toInt32(x(1)) - 1
+		
+			For i = 1 To number
+				a(toIndex, sizes(toIndex)) = a(fromIndex, sizes(fromIndex) - (number - i + 1))
+				sizes(toIndex) += 1
+			Next
+			sizes(fromIndex) -= number			
+        Loop
+		For col = 0 To columns - 1
+    		Console.Write(a(col, sizes(col) - 1))
+    	Next
+    	Console.WriteLine()
+	End Sub
+End Class

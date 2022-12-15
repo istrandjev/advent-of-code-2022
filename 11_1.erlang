@@ -1,0 +1,118 @@
+-module(prog).
+-export([main/0]).
+-record(monkey, {items = [], operation, check, yes_monkey, no_monkey, number, inspected}).
+
+parse_entries() ->
+	ItemsLine = lists:nth(2, string:split(io:get_line(""), ":")),
+	ItemsStringList = string:tokens(ItemsLine, ","),
+	lists:map(fun my_str_to_int/1, ItemsStringList).
+
+parse_operation_code(OperationCode) ->
+	Operands = string:split(OperationCode, " "),
+	Function = lists:nth(1, Operands),
+	Argument = my_str_to_int(lists:nth(2, Operands)),
+	
+	if Function == "*" -> 
+		fun(X) -> (X * Argument) div 3 end;
+	true -> 
+		fun(X) -> (X + Argument) div 3 end
+	end.
+	
+parse_operation() ->
+	OperationCode = string:trim(lists:nth(2, string:split(io:get_line(""), "= old "))),
+	if OperationCode == "* old" ->
+		fun(X) -> (X * X) div 3 end;
+	true -> 
+		parse_operation_code(OperationCode)
+	end.
+
+parse_check() -> 
+	TestValueStr = lists:nth(2, string:split(io:get_line(""), "divisible by ")),
+	TestValue = my_str_to_int(TestValueStr),
+	fun(X) -> X rem TestValue == 0 end.
+
+parse_monkey() ->
+	MonkeyStr = lists:nth(2, string:split(io:get_line(""), "to monkey ")),
+	my_str_to_int(MonkeyStr).
+	
+read_monkey(MONKEY_NUMBER) ->
+	io:get_line(""),
+	Entries = parse_entries(),
+	Operation = parse_operation(),
+	Check = parse_check(),
+	YesMonkey = parse_monkey(),
+	NoMonkey = parse_monkey(),
+	io:get_line(""),
+	#monkey{
+		items = Entries, 
+		operation=Operation, 
+		check=Check, 
+		yes_monkey=YesMonkey, 
+		no_monkey=NoMonkey,
+		number=MONKEY_NUMBER,
+		inspected=0
+	}.
+
+my_str_to_int(S) ->
+	{Int, _} = string:to_integer(string:trim(S)),
+	Int.
+
+print_monkey(Monkey) ->
+	io:format("Number: ~p inspected: ~p~n", [Monkey#monkey.number, Monkey#monkey.inspected]),
+	io:format("Items: ~w~n", [Monkey#monkey.items]).
+
+setnth(1, [_|Rest], New) -> [New|Rest];
+setnth(I, [E|Rest], New) -> [E|setnth(I-1, Rest, New)].
+
+
+n_monkeys(X) ->
+	if X == 0 -> 
+		[];
+	true -> 
+		lists:append(n_monkeys(X - 1), [read_monkey(X - 1)])
+	end.
+
+negate(F) ->
+	fun(X) -> not(F(X)) end. 
+
+process_monkey(Index, Monkeys) ->
+	Monkey = lists:nth(Index, Monkeys),
+	Values = lists:map(Monkey#monkey.operation, Monkey#monkey.items),
+	YesMonkey = lists:nth(Monkey#monkey.yes_monkey + 1, Monkeys),
+	NoMonkey = lists:nth(Monkey#monkey.no_monkey + 1, Monkeys),
+	YesMonkeyItems = lists:append(YesMonkey#monkey.items, lists:filter(Monkey#monkey.check, Values)),
+	NoMonkeyItems = lists:append(NoMonkey#monkey.items, lists:filter(negate(Monkey#monkey.check), Values)),
+	NewYesMonkey = YesMonkey#monkey{items = YesMonkeyItems},
+	Inspected = Monkey#monkey.inspected + length(Values),
+	NewMonkey = Monkey#monkey{items = [], inspected=Inspected},
+	Updated = setnth(Index, Monkeys, NewMonkey),
+	NewNoMonkey = NoMonkey#monkey{items = NoMonkeyItems},
+	Updated2 = setnth(Monkey#monkey.yes_monkey + 1, Updated, NewYesMonkey),
+	setnth(Monkey#monkey.no_monkey + 1, Updated2, NewNoMonkey).
+	
+process_helper(Index, Monkeys) ->
+	if Index == length(Monkeys) ->
+		process_monkey(Index, Monkeys);
+	true ->
+		process_helper(Index + 1, process_monkey(Index, Monkeys))
+	end.
+	
+process_all(Monkeys) ->
+	process_helper(1, Monkeys).
+
+do_rounds(Monkeys, Total) ->
+	if Total == 0 -> 
+		Monkeys;
+	true->
+		NewMonkeys = process_all(Monkeys),
+		do_rounds(NewMonkeys, Total - 1)
+	end.
+		
+main() ->
+	Monkeys = n_monkeys(8),
+	Monkey = lists:nth(1, Monkeys),
+	ProcessedMonkeys = do_rounds(Monkeys, 20),
+	Times = lists:map(fun(M) -> M#monkey.inspected end, ProcessedMonkeys),
+	Sorted = lists:reverse(lists:sort(Times)),
+	Value = lists:nth(1, Sorted) * lists:nth(2, Sorted), 
+	io:format("Number: ~p", [Value]).
