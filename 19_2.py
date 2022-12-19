@@ -47,7 +47,7 @@ def solve(miners: Tuple[int, int, int, int], resources: Tuple[int, int, int], mi
         new_resources = tuple(
             min(
                 resources[i] + miners[i] * needed - robot_costs[next_robot][i],
-                (maxes[i] - new_miners[i] + 4) * (minutes - needed)
+                (maxes[i] - new_miners[i] + 1) * (minutes - needed + 1)
             )
             for i in range(3)
         )
