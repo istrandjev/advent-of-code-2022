@@ -49,7 +49,7 @@ int main() {
     char line_buf[42];
     char name[5], name1[5], name2[5];
 
-    while (gets(line_buf)) {
+    while (fgets(line_buf, 42, stdin)) {
         line_buf[4] = ' ';
 
         sscanf(line_buf, "%s", name);
