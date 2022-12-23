@@ -14,11 +14,11 @@ ll get_elves_area(const set<pair<int, int>>& elves) {
     ll minx, maxx, miny, maxy;
     miny = maxy = elves.begin()->first;
     minx = maxx = elves.begin()->second;
-    for (auto elve:  elves) {
-        minx = min(minx, (ll)elve.second);
-        maxx = max(maxx, (ll)elve.second);
-        miny = min(miny, (ll)elve.first);
-        maxy = max(maxy, (ll)elve.first);
+    for (auto elf:  elves) {
+        minx = min(minx, (ll)elf.second);
+        maxx = max(maxx, (ll)elf.second);
+        miny = min(miny, (ll)elf.first);
+        maxy = max(maxy, (ll)elf.first);
     }
     return (maxy - miny + 1) * (maxx - minx + 1);
 }
@@ -47,19 +47,19 @@ int main() {
         set<pair<int, int> > proposals;
         set<pair<int, int> > repeated;
         
-        for (auto elve: elves) {
+        for (auto elf: elves) {
             bool has_neighbour = false;
             for (int l = 0; l < 8; ++l) {
-                int ty = elve.first + moves[l][0];
-                int tx = elve.second + moves[l][1];
+                int ty = elf.first + moves[l][0];
+                int tx = elf.second + moves[l][1];
                 if (elves.count({ty, tx})) {
                     has_neighbour = true;
                     break;
                 }
             }
             if (!has_neighbour) {
-                proposed.insert({elve, elve});
-                proposals.insert(elve);
+                proposed.insert({elf, elf});
+                proposals.insert(elf);
                 continue;
             }
             bool has_proposed = false;
@@ -68,15 +68,15 @@ int main() {
 
                 bool has = false;
                 for (int delta = -1; delta <= 1; ++delta) {
-                    int ty = elve.first + moves[(to_check + delta)%8][0];
-                    int tx = elve.second + moves[(to_check + delta)%8][1];
+                    int ty = elf.first + moves[(to_check + delta)%8][0];
+                    int tx = elf.second + moves[(to_check + delta)%8][1];
                     if (elves.count({ty, tx})) {
                         has = true;
                     }
                 }
                 if (!has) {
-                    pair<int, int> new_position(elve.first + moves[to_check][0], elve.second + moves[to_check][1]);
-                    proposed.insert({elve, new_position});
+                    pair<int, int> new_position(elf.first + moves[to_check][0], elf.second + moves[to_check][1]);
+                    proposed.insert({elf, new_position});
                     if (proposals.count(new_position)) {
                         repeated.insert(new_position);
                     } else {
@@ -87,8 +87,8 @@ int main() {
                 }
             }
             if (!has_proposed) {
-                proposed.insert({elve, elve});
-                proposals.insert(elve);
+                proposed.insert({elf, elf});
+                proposals.insert(elf);
             }
         }
 
